@@ -5,7 +5,7 @@ require './lib/model'
 require 'json'
 #set :server, 'thin'
 enable :sessions
-connections = []
+connections = []  # XXX: Won't when across multiple servers :(
 
 # TODO:
 # Schema: index user handle
@@ -29,13 +29,19 @@ end
 get '/stream', :provides => 'text/event-stream' do
   stream :keep_open do |out|
     connections << out
-    out.callback { connections.delete(out) }
+    out.callback { connections.delete(out) }  # Callback for disconnecting
+    # TODO?: out.errback do
   end
 end
 
 post '/' do
   connections.each { |out| out << "data: #{params[:msg]}\n\n" }
   204 # response without entity body
+end
+
+def send_message(connections, msg_json)
+  # #{msg_json}
+  connections.each { |out| out << "data: boo\n\n" }
 end
 
 # TASKS API ###################################################################
@@ -46,8 +52,8 @@ post '/task/start/:task_id' do
   if task_id > 0
     user = get_current_user()
     user.current_task_id = task_id
-    saved = user.save()
-    {:success => saved, 'taskId' => task_id}.to_json
+    success = user.save()
+    {:success => success, 'taskId' => task_id}.to_json
   else
     [500, {:error => 'id must be greater than 0'}.to_json]
   end
@@ -58,13 +64,13 @@ post '/task/stop/:dummy' do
   content_type :json
   user = get_current_user()
   user.current_task_id = nil
-  saved = user.save()
-  {:success => saved}.to_json
+  success = user.save()
+  {:success => success}.to_json
 end
 
 get '/tasks/' do
   @task_list = Task.all().order(:priority);
-  erb :tasks, :layout => false
+  erb :task_admin_ng, :layout => false
 end
 
 get '/user/tasks' do
@@ -79,6 +85,37 @@ get '/user/tasks' do
   {:tasks => tasks}.to_json
 end
 
+get '/api/tasks/' do
+  content_type :json
+  tasks = Task.all().order(:priority)
+  {:tasks => tasks}.to_json
+end
+
+post '/api/tasks/' do
+  content_type :json
+  data = read_json_body(request.body)
+  task_id = data['id'].to_i
+
+  task = (task_id > 0) ? Task.find(task_id) : Task.new
+  task.title = data['title']
+  task.priority = data['priority']
+
+  success = task.save()  
+  send_message(connections, task.to_msg_json('create'))
+  {:success => success, 'task' => task}.to_json
+end
+
+delete '/api/tasks/:task_id' do
+  content_type :json
+  #data = read_json_body(request.body)
+  task_id = params['task_id'].to_i
+
+  success = Task.delete(task_id)
+  {:success => success, 'taskId' => task_id}.to_json
+end
+
+
+
 # HELPER ######################################################################
 
 # Raises an exception if there's no current user
@@ -89,4 +126,9 @@ def get_current_user()
   else
     User.find_by(handle: user_handle)
   end
+end
+
+def read_json_body(body)
+  body.rewind  # in case someone already read it
+  JSON.parse body.read
 end

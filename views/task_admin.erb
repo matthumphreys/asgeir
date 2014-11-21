@@ -30,25 +30,24 @@
 			</tr>
 
 			<% for task in @task_list %>
-				<form>
-					<input type="hidden" name="<%= task.id %>" value="1" />
-					<tr>
+				<form method="POST" action="/task/save/<%= task.id %>">
+					<tr data-action="/task/save/<%= task.id %>">
 						<td><input type="text" name="title" value="<%= task.title %>" size="30" /></td>
 						<td><input type="text" name="priority" value="<%= task.priority %>" size="4" /></td>
-						<td><input type="submit" value="Update" /></td>
+						<td><button type="button" class="btn btn-primary btn-update">Update</button></td>
 					</tr>
 				</form>
 			<% end %>
 			<!-- "New task" form -->
-			<form>
-				<tr>
+			<form method="POST" action="/task/create">
+				<tr data-action="/task/save/">
 					<td>
-						<input type="text" name="title" value="" size="30" placeholder="Title" />
+						<input type="text" name="title" value="" size="30" placeholder="New task" />
 					</td>
 					<td>
 						<input type="text" name="priority" value="" size="4" placeholder="100" />
 					</td>
-					<td><input type="submit" value="Create" /></td>
+					<td><button type="button" class="btn btn-primary btn-create">Create</button></td>
 				</tr>
 			</form>
 		</table>

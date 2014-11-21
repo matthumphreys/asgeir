@@ -42,10 +42,20 @@
 			</div>
 			<div class="task-main">
 				<div class="task-title">{{task.id}} {{task.title}}</div>
-				<div class="task-msg"><input type="text" /></div>
+				<div class="task-msg"><input type="text" placeholder="Send a message" /></div>
 			</div>
 		</div>
 	</form>
+
+	<div id="chat">
+		Chat...
+	</div>
+
+	<script>
+    // XXX: Use (function(){ /* do jQuery */ })(jQuery)
+    var es = new EventSource('/stream');
+    es.onmessage = function(e) { $('#chat').append(e.data + "\n") };
+  </script>
 
 </body>
 </html>

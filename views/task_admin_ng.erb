@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="asgeirAdminApp">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Admin</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  	input[type='submit'] {
+  		width: 65px;
+  	}
+  	.btn {
+  		font-size: 11px;
+  	}
+  	.btn-delete {
+  		margin-left: 5px;
+  	}
+
+  </style>
+  <script src="/js/angular.min.js"></script>
+  <script src="/js/underscore.min.js"></script>
+  <script src="/js/controllers-admin.js"></script>
+</head>
+<body ng-controller="TaskAdminCtrl" ng-init="init()">
+
+	<table class="table table-striped">
+		<tr>
+			<th>Title</th>
+			<th>Priority (1&nbsp;=&nbsp;highest)</th>
+			<th>Actions</th>
+		</tr>
+
+		<tr ng-repeat="task in tasks">
+			<td>
+				<input type="hidden" name="id" ng-value="task.id" />
+				<input type="text" name="title" ng-model="task.title" size="30" />
+			</td>
+			<td>
+				<input type="text" name="priority" ng-model="task.priority" size="4" />
+			</td>
+			<td>
+				<button type="button" class="btn btn-primary btn-update" ng-click="saveTask(task, false)">Update</button>
+				<button type="button" class="btn btn-default btn-delete" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash" /></button>
+			</td>
+		</tr>
+
+		<!-- "New task" form -->
+		<tr>
+			<td>
+				<input type="text" name="title" ng-model="newTask.title" size="30" placeholder="New task" />
+			</td>
+			<td>
+				<input type="text" name="priority" ng-model="newTask.priority" size="4" placeholder="1000" />
+			</td>
+			<td><button type="button" class="btn btn-primary btn-create" ng-click="saveTask(newTask, true)">Create</button></td>
+		</tr>
+	</table>
+
+	<!-- XXX: Looks awful! -->
+	<div ng-show="error" class="alert-dismissible alert-danger error">
+		<!-- <div class="panel-heading"> -->
+			ERROR! {{error}}
+		<!-- </div> -->
+	</div>
+
+</body>
+</html>
