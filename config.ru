@@ -1,2 +1,2 @@
-require './chat'
+require './app'
 run Sinatra::Application

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasks</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .active {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <% if @tasks.nil? or @tasks.empty? %>
+    No tasks
+  <% else %>
+    <table class="table">
+      <% for @task in @tasks %>
+        <tr class="table-striped">
+          <td><%= @task.title %></td>
+          <td class="actions" data-current-task-id="<%= @user.current_task_id %>">
+            <span class="action-btn start-btn" data-action="start" data-task-id="<%= @task.id %>">Start</span> | 
+            <span class="action-btn stop-btn" data-action="stop" data-task-id="<%= @task.id %>">Stop</span>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+
+  <pre id='chat'></pre>
+  <form>
+    <input id='msg' placeholder='type message here...' />
+  </form>
+
+  <script src="/js/jquery-2.1.1.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script>
+    // reading
+    var es = new EventSource('/stream');
+    es.onmessage = function(e) { $('#chat').append(e.data + "\n") };
+
+    if (typeof $ === 'function') {
+      var currentTaskId = $('.actions').attr('data-current-task-id');
+      if (currentTaskId) {
+        activateButton($(".start-btn[data-task-id='" + currentTaskId + "']"));
+      }
+
+      // writing
+      $("form").on('submit',function(e) {
+        $.post('/', {msg: "<%= user %>: " + $('#msg').val()});
+        $('#msg').val(''); $('#msg').focus();
+        e.preventDefault();
+      });
+
+      $(".action-btn").click(function(e) {
+        var action = $(this).attr("data-action");
+        var taskId = $(this).attr("data-task-id");
+        $.post('/task/' + action + "/" + taskId); // , {"task_id": taskId}
+        activateButton($(this));
+        e.preventDefault();
+      });
+
+      function activateButton(buttonElement) {
+        $(buttonElement).siblings().removeClass("active");
+        $(buttonElement).addClass("active");
+      }
+    } else {
+      console.log('$ not available');
+    }
+  </script>
+
+</body>
+</html>

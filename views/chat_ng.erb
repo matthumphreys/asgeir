@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="asgeirApp">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasks</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/main.css" rel="stylesheet">
+  <script src="/js/angular.min.js"></script>
+  <script src="/js/controllers.js"></script>
+</head>
+<body ng-controller="TaskListCtrl" ng-init="init(<%= current_task_id %>)">
+
+	<div class="task-header">
+		<div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div>
+		<div class="th-main">
+			Task <!-- | currentTaskId={{currentTaskId}} -->
+			<span class="th-actions" onclick="window.open('/tasks/', 'winAdmin')">
+				[ Admin ]
+			</span>
+			<span class="th-actions" ng-click="resetInProgress()">
+				[ Clear "in progress" status ]
+			</span> 
+			
+		</div>
+	</div>
+
+	<!-- TODO: Use bootstrap "alert-dismissible alert-danger" instead of "panel panel-danger" -->
+	<div ng-show="error" class="panel panel-danger error">
+		<div class="panel-heading">ERROR! {{error}}</div>
+		<div class="panel-body" ng-click="clearError()">
+			[ Close ]
+		</div>
+	</div>
+
+	<form id="task-form">
+		<div class="task" ng-repeat="task in tasks" ng-class="{'bg-success': (task.id == currentTaskId)}">
+			<%# XXX: Use ng-change instead of ng-click? %>
+			<div class="task-status" ng-click="setCurrentTask(task.id)">
+				<input type="radio" ng-model="$parent.currentTaskId" name="current" ng-value="task.id"/>
+			</div>
+			<div class="task-main">
+				<div class="task-title">{{task.id}} {{task.title}}</div>
+				<div class="task-msg"><input type="text" /></div>
+			</div>
+		</div>
+	</form>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  	body {
+	    padding-top: 40px;
+			padding-bottom: 40px;
+			background-color: #eee;
+		}
+		.form {
+			max-width: 330px;
+			margin: 0 auto;
+		}
+		.user {
+			vertical-align: text-top;
+		}
+		.footer {
+			padding-top: 19px;
+			color: #777;
+		}
+  </style>
+</head>
+<body>
+	<div class="container">
+		<div class="form">
+			<h2>Please sign in</h2>
+			<% for @user in @users %>
+				<div>
+					<span class="glyphicon glyphicon-user" />
+					<a href="?user=<%= @user.handle %>" class="user"><%= @user.handle %></a>
+				</div>
+			<% end %>
+			<footer class="footer">
+				<p><small>Thanks to <a href="http://glyphicons.com/" target="_new">Glyphicons</a> for the icons :)</small><p>
+			</footer>
+		</div>
+	</div>
+</body>
+</html>

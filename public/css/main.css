@@ -1,0 +1,47 @@
+/* TASK LIST: HEADER */
+.task-header {
+	font-weight: lighter;
+	background-color: #222;
+	color: white;
+	font-size: small;
+}
+.th-status {
+	/*font-size: medium;*/
+	float: left;
+	width: 45px;
+	padding-left: 8px;
+	padding-top: 1px;
+}
+.th-main {
+	position: relative;
+	left: -13px;
+}
+.th-actions {
+	float: right;
+	padding-right: 3px;
+}
+
+/* TASK LIST: BODY */
+.task {
+	padding-top: 3px;
+	border-bottom: 1px solid #ddd;
+}
+.task-status {
+	float: left;
+	width: 30px;
+}
+.task-status input {
+	margin-left: 8px;
+}
+.task-main {
+	margin-left: 30px;
+}
+.task-msg input {
+	margin-bottom: 5px;
+	font-family: monospace;
+}	
+
+/* MISC */
+.error {
+	margin: 15px;
+}

@@ -1,0 +1,6 @@
+adapter: mysql2
+database: asgeir
+username: foo
+password: bar
+host: localhost
+port: 3306
