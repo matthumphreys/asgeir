@@ -27,6 +27,12 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 		};
 	}
 
+	$scope.submitOnEnter = function(keyEvent, task) {
+	  if (keyEvent.keyIdentifier === "Enter") {
+	    $scope.sendMessage(task);
+	  }
+	}
+
 	$scope.sendMessage = function(task) {
 		var message = {
 			from_user: $scope.user.id,
@@ -89,4 +95,5 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 	  });
 	  // TODO: .error
   }
+
 });

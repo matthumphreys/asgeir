@@ -7,8 +7,16 @@
   <title>Task Admin</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <style>
+  	/** Styles based on main.css */
+
   	input[type='submit'] {
   		width: 65px;
+  	}
+  	input[name='title'] {
+  		width: 210px;
+  	}
+  	input[name='priority'] {
+  		width: 50px;
   	}
   	.btn {
   		font-size: 11px;
@@ -16,6 +24,30 @@
   	.btn-delete {
   		margin-left: 5px;
   	}
+
+  	/* TASK LIST: HEADER */
+		.task-header {
+			font-weight: lighter;
+			background-color: #222;
+			color: white;
+			font-size: small;
+		}
+		.th-status {
+			/*font-size: medium;*/
+			float: left;
+			width: 45px;
+			padding-left: 8px;
+			padding-top: 1px;
+		}
+		.th-actions {
+			float: right;
+			padding-right: 3px;
+		}
+
+		.th-main-admin {
+			position: relative;
+			padding-left: 8px;
+		}
   </style>
   <script src="/js/angular.min.js"></script>
   <script src="/js/underscore.min.js"></script>
@@ -23,10 +55,17 @@
 </head>
 <body ng-controller="TaskAdminCtrl" ng-init="init()">
 
-	<table class="table table-striped">
+	<div class="task-header">
+		<!--<div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div>-->
+		<div class="th-main-admin">
+			Tasks
+		</div>
+	</div>
+
+	<table class="table-condensed table-striped">
 		<tr>
 			<th>Title</th>
-			<th>Priority (1&nbsp;=&nbsp;highest)</th>
+			<th>Priority <!-- (1&nbsp;=&nbsp;highest) --></th>
 			<th>Actions</th>
 		</tr>
 
@@ -40,7 +79,7 @@
 			</td>
 			<td>
 				<button type="button" class="btn btn-primary btn-update" ng-click="saveTask(task, false)">Update</button>
-				<button type="button" class="btn btn-default btn-delete" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash" /></button>
+				<button type="button" class="btn btn-danger btn-delete" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash" /></button>
 			</td>
 		</tr>
 

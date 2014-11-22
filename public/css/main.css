@@ -36,6 +36,7 @@
 .task-title {
 	font-weight: bold;
 	font-size: 15px;
+	margin-bottom: 4px;
 }
 .task-main {
 	margin-left: 30px;
@@ -44,7 +45,7 @@
 	font-weight: bold;
 }
 .task-msg input {
-	margin-bottom: 5px;
+	margin-bottom: 7px;
 	width: 305px;
 	font-family: monospace;
 }
