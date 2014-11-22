@@ -1,22 +1,55 @@
 var asgeirApp = angular.module('asgeirApp', []);
 
-// asgeirApp.controller('TaskListCtrl', function ($scope) {
-//   $scope.tasks = [
-// 	    {'title': 'Nexus S'},
-// 	    {'title': 'Motorola XOOM with Wi-Fi'},
-// 	    {'title': 'MOTOROLA XOOM'}
-// 	  ];
-// });
-
 asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
+	$scope.userId = null;
 	$scope.currentTaskId = null;
 	$scope.error = '';
+	// Private
+	$scope._eventSource = new EventSource('/stream');
 
 	loadTasks();
 
-	$scope.init = function(currentTaskId) {
-		if (currentTaskId) {
-			$scope.currentTaskId = currentTaskId;
+	$scope.init = function(userId, currentTaskIdStr) {
+		$scope.userId = userId;
+		if (currentTaskIdStr) {
+			$scope.currentTaskId = parseInt(currentTaskIdStr);
+		}
+		$scope._eventSource.onmessage = function(e) {
+			console.log('DEBUG:' + e.data);
+			var parsedData = JSON.parse(e.data);
+			if (parsedData.entityType == 'message') {
+				appendMessage(parsedData.entityData);
+			}
+		};
+	}
+
+	$scope.sendMessage = function(task) {
+		var message = {
+			from_user: $scope.userId,
+			task_id: task.id,
+			msg: task.draftMessage
+		}
+		$http.post('/api/messages/send/', message).success(function(data) {
+	    // $scope.$apply(function () {
+	    // 	task.draftMessage = '';
+	    // });
+	  }).error(function(data) {
+  		$scope.error = 'Failed to send message :-(';
+  	});
+  	task.draftMessage = '';
+	}
+
+	function appendMessage(messageObj) {
+		var targetTask = _.findWhere($scope.tasks, {id: messageObj.taskId});
+		if (targetTask) {
+			if (typeof targetTask.messages === 'undefined') {
+				targetTask.messages = [];
+			}
+			targetTask.messages.push(messageObj);
+			// Let angular know that data has changed
+			$scope.$apply(function () {
+				$scope.tasks = $scope.tasks;
+			});
 		}
 	}
 
@@ -32,8 +65,8 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 	  	$http.post('task/start/' + taskIdInt).success(function(data) {
 		    $scope.currentTaskId = taskIdInt;
 		  }).error(function(data) {
-	  		$scope.error = 'Failed to set current task :(';
-	  	})
+	  		$scope.error = 'Failed to set current task :-(';
+	  	});
 	  }
   }
 
@@ -42,13 +75,14 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
   	$http.post('task/stop/dummy').success(function(data) {
 	    loadTasks();
 	  }).error(function(data) {
-  		$scope.error = 'Failed to set current task :(';
-  	})
+  		$scope.error = 'Failed to set current task :-(';
+  	});
   }
 
   function loadTasks() {
   	$http.get('user/tasks').success(function(data) {
 	    $scope.tasks = data.tasks;
 	  });
+	  // TODO: .error
   }
 });

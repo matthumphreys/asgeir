@@ -8,9 +8,11 @@
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/main.css" rel="stylesheet">
   <script src="/js/angular.min.js"></script>
+  <script src="/js/underscore.min.js"></script>
   <script src="/js/controllers.js"></script>
 </head>
-<body ng-controller="TaskListCtrl" ng-init="init(<%= current_task_id %>)">
+<%# current_task_id can be nil %>
+<body ng-controller="TaskListCtrl" ng-init="init(<%= @user.id %>, '<%= current_task_id %>')">
 
 	<div class="task-header">
 		<div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div>
@@ -42,20 +44,16 @@
 			</div>
 			<div class="task-main">
 				<div class="task-title">{{task.id}} {{task.title}}</div>
-				<div class="task-msg"><input type="text" placeholder="Send a message" /></div>
+				<div class="task-msg">
+					<div ng-repeat="message in task.messages" class="striped">
+						<div>{{message.from_user}} {{message.msg}}</div>
+					</div>
+					<input type="text" name="msg" ng-model="task.draftMessage" placeholder="Send a message" />
+					<button type="button" class="btn btn-default" ng-click="sendMessage(task)">Send</button>
+				</div>
 			</div>
 		</div>
 	</form>
-
-	<div id="chat">
-		Chat...
-	</div>
-
-	<script>
-    // XXX: Use (function(){ /* do jQuery */ })(jQuery)
-    var es = new EventSource('/stream');
-    es.onmessage = function(e) { $('#chat').append(e.data + "\n") };
-  </script>
 
 </body>
 </html>

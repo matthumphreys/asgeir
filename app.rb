@@ -17,7 +17,7 @@ get '/' do
     @user = User.find_by handle: user_handle # Will raise an exception if there's no matching record
     # TODO: Get tasks
     @tasks = Task.all()
-    erb :chat_ng, :locals => { :user => @user.handle, :current_task_id => @user.current_task_id }, :layout => false
+    erb :chat_ng, :locals => { :current_task_id => @user.current_task_id }, :layout => false
   else
     @users = User.all().order(:handle)
     erb :login, :layout => false
@@ -40,8 +40,8 @@ post '/' do
 end
 
 def send_message(connections, msg_json)
-  # #{msg_json}
-  connections.each { |out| out << "data: boo\n\n" }
+  puts "DEBUG: " << msg_json
+  connections.each { |out| out << "data: #{msg_json}\n\n" }
 end
 
 # TASKS API ###################################################################
@@ -114,7 +114,19 @@ delete '/api/tasks/:task_id' do
   {:success => success, 'taskId' => task_id}.to_json
 end
 
+# MESSAGE API #################################################################
 
+post '/api/messages/send/' do
+  content_type :json
+  data = read_json_body(request.body)
+  task_id = data['task_id'].to_i
+
+  message = Message.new(task_id: task_id, msg: data['msg'], from_user: data['from_user'])
+
+  success = message.save()  
+  send_message(connections, message.to_msg_json('create'))
+  {:success => success, 'message' => message}.to_json
+end
 
 # HELPER ######################################################################
 
