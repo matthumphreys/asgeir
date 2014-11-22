@@ -1,16 +1,20 @@
 var asgeirApp = angular.module('asgeirApp', []);
 
 asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
-	$scope.userId = null;
-	$scope.currentTaskId = null;
+	$scope.user = null;
+	$scope.currentTaskId = null;	// For this user
 	$scope.error = '';
 	// Private
 	$scope._eventSource = new EventSource('/stream');
 
 	loadTasks();
 
-	$scope.init = function(userId, currentTaskIdStr) {
-		$scope.userId = userId;
+	$scope.init = function(userId, userHandle, currentTaskIdStr) {
+		$scope.user = {
+			id: userId,
+			handle: userHandle,
+			// TODO: Avatar
+		};
 		if (currentTaskIdStr) {
 			$scope.currentTaskId = parseInt(currentTaskIdStr);
 		}
@@ -25,7 +29,7 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 
 	$scope.sendMessage = function(task) {
 		var message = {
-			from_user: $scope.userId,
+			from_user: $scope.user.id,
 			task_id: task.id,
 			msg: task.draftMessage
 		}

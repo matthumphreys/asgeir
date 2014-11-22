@@ -20,9 +20,13 @@ class Task < ActiveRecord::Base
 end
 
 class Message < ActiveRecord::Base
-	def to_msg_json(action)
-		{'entityType' => 'message', 'actionType' => action, 'entityData' => {
-			'taskId' => self.task_id, :msg => self.msg
-		}}.to_json
+	def to_msg_json(action, user)
+		{:entityType => 'message', :actionType => action, :entityData => {
+			:taskId => self.task_id, :msg => self.msg, :fromUser => {
+					:id => user.id,
+					:handle => user.handle
+				}
+			}
+		}.to_json
 	end
 end

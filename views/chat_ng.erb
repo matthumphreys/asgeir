@@ -12,7 +12,7 @@
   <script src="/js/controllers.js"></script>
 </head>
 <%# current_task_id can be nil %>
-<body ng-controller="TaskListCtrl" ng-init="init(<%= @user.id %>, '<%= current_task_id %>')">
+<body ng-controller="TaskListCtrl" ng-init="init(<%= @user.id %>, '<%= @user.handle %>', '<%= current_task_id %>')">
 
 	<div class="task-header">
 		<div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div>
@@ -43,10 +43,10 @@
 				<input type="radio" ng-model="$parent.currentTaskId" name="current" ng-value="task.id"/>
 			</div>
 			<div class="task-main">
-				<div class="task-title">{{task.id}} {{task.title}}</div>
+				<div class="task-title"><!-- {{task.id}} -->{{task.title}}</div>
 				<div class="task-msg">
 					<div ng-repeat="message in task.messages" class="striped">
-						<div>{{message.from_user}} {{message.msg}}</div>
+						<div><span class="msg-handle">{{message.fromUser.handle}}:</span> {{message.msg}}</div>
 					</div>
 					<input type="text" name="msg" ng-model="task.draftMessage" placeholder="Send a message" />
 					<button type="button" class="btn btn-default" ng-click="sendMessage(task)">Send</button>

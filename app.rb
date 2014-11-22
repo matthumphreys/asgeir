@@ -120,11 +120,13 @@ post '/api/messages/send/' do
   content_type :json
   data = read_json_body(request.body)
   task_id = data['task_id'].to_i
+  user_id = data['from_user'].to_i
 
-  message = Message.new(task_id: task_id, msg: data['msg'], from_user: data['from_user'])
+  message = Message.new(task_id: task_id, msg: data['msg'], from_user: user_id)
+  success = message.save()
 
-  success = message.save()  
-  send_message(connections, message.to_msg_json('create'))
+  user = User.find(user_id)
+  send_message(connections, message.to_msg_json('create', user))
   {:success => success, 'message' => message}.to_json
 end
 

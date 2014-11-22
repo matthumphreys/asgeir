@@ -35,11 +35,13 @@
 }
 .task-title {
 	font-weight: bold;
+	font-size: 15px;
 }
 .task-main {
 	margin-left: 30px;
 }
-.task-msg-even {
+.msg-handle {
+	font-weight: bold;
 }
 .task-msg input {
 	margin-bottom: 5px;
