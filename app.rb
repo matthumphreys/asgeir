@@ -80,9 +80,9 @@ get '/user/tasks' do
     tasks = Task.all()
   else
     current_task = Task.find(user.current_task_id)
-    tasks = Task.where("priority <= ?", current_task.priority)
+    tasks = Task.includes({messages: {user: :handle}}).where("priority <= ?", current_task.priority)
   end
-  {:tasks => tasks}.to_json
+  {:tasks => tasks}.to_json(:include => {:messages => {:include => {:user => {:only => :handle }}}})
 end
 
 get '/api/tasks/' do

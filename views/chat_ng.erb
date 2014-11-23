@@ -54,7 +54,7 @@
 				<div class="task-title"><span>{{task.title}}</span></div>
 				<div class="task-msg">
 					<div ng-repeat="message in task.messages" class="striped">
-						<div><span class="msg-handle">{{message.fromUser.handle}}:</span> {{message.msg}}</div>
+						<div><span class="msg-handle">{{message.user.handle}}:</span> {{message.msg}}</div>
 					</div>
 					<input type="text" name="msg" ng-model="task.draftMessage" placeholder="Send a message" ng-keypress="submitOnEnter($event, task)" />
 					<button type="button" class="btn btn-default" ng-click="sendMessage(task)">Send</button>
