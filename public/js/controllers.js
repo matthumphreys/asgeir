@@ -21,8 +21,8 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 		$scope._eventSource.onmessage = function(e) {
 			console.log('DEBUG:' + e.data);
 			var parsedData = JSON.parse(e.data);
-			if (parsedData.entityType == 'message') {
-				appendMessage(parsedData.entityData);
+			if (parsedData.entity_type == 'message') {
+				appendMessage(parsedData.entity_data);
 			}
 		};
 	}
@@ -50,7 +50,7 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 	}
 
 	function appendMessage(messageObj) {
-		var targetTask = _.findWhere($scope.tasks, {id: messageObj.taskId});
+		var targetTask = _.findWhere($scope.tasks, {id: messageObj.task_id});
 		if (targetTask) {
 			if (typeof targetTask.messages === 'undefined') {
 				targetTask.messages = [];

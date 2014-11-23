@@ -53,7 +53,7 @@ post '/task/start/:task_id' do
     user = get_current_user()
     user.current_task_id = task_id
     success = user.save()
-    {:success => success, 'taskId' => task_id}.to_json
+    {:success => success, 'task_id' => task_id}.to_json
   else
     [500, {:error => 'id must be greater than 0'}.to_json]
   end
@@ -80,7 +80,9 @@ get '/user/tasks' do
     tasks = Task.all()
   else
     current_task = Task.find(user.current_task_id)
-    tasks = Task.includes({messages: {user: :handle}}).where("priority <= ?", current_task.priority)
+    #tasks = Task.includes({messages: {user: :handle}}).where("priority <= ?", current_task.priority)
+    tasks = Task.includes({:messages => [:user]}).where("priority <= ?", current_task.priority)
+    
   end
   {:tasks => tasks}.to_json(:include => {:messages => {:include => {:user => {:only => :handle }}}})
 end
@@ -111,7 +113,7 @@ delete '/api/tasks/:task_id' do
   task_id = params['task_id'].to_i
 
   success = Task.delete(task_id)
-  {:success => success, 'taskId' => task_id}.to_json
+  {:success => success, 'task_id' => task_id}.to_json
 end
 
 # MESSAGE API #################################################################

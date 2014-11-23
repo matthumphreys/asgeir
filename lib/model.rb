@@ -15,7 +15,7 @@ class Task < ActiveRecord::Base
 	has_many :messages
 
 	def to_msg_json(action)
-		{'entityType' => 'task', 'actionType' => action, 'entityData' => {
+		{:entity_type => 'task', :action_type => action, :entity_data => {
 			:title => self.title
 		}}.to_json
 	end
@@ -28,8 +28,8 @@ class Message < ActiveRecord::Base
 
 
 	def to_msg_json(action, user)
-		{:entityType => 'message', :actionType => action, :entityData => {
-			:taskId => self.task_id, :msg => self.msg, :fromUser => {
+		{:entity_type => 'message', :action_type => action, :entity_data => {
+			:task_id => self.task_id, :msg => self.msg, :user => {
 					:id => user.id,
 					:handle => user.handle
 				}
