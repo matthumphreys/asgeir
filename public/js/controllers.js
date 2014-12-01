@@ -3,13 +3,15 @@ var asgeirApp = angular.module('asgeirApp', []);
 asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 	$scope.user = null;
 	$scope.currentTaskId = null;	// For this user
+	$scope.currentTaskPriority = 0;
+	$scope.tasks = [];
+	$scope.messages = [];
+	$scope.draftMessage = '';
 	$scope.error = '';
 	// Private
 	$scope._eventSource = new EventSource('/stream');
 
-	loadTasks();
-
-	$scope.init = function(userId, userHandle, currentTaskIdStr) {
+	$scope.init = function(userId, userHandle, currentTaskIdStr, currentTaskPriority) {
 		$scope.user = {
 			id: userId,
 			handle: userHandle,
@@ -25,19 +27,20 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 				appendMessage(parsedData.entity_data);
 			}
 		};
+		loadTasks();
 	}
 
-	$scope.submitOnEnter = function(keyEvent, task) {
+	$scope.submitOnEnter = function(keyEvent) {
 	  if (keyEvent.keyIdentifier === "Enter") {
-	    $scope.sendMessage(task);
+	    $scope.sendMessage();
 	  }
 	}
 
-	$scope.sendMessage = function(task) {
+	$scope.sendMessage = function() {
 		var message = {
 			from_user: $scope.user.id,
-			task_id: task.id,
-			msg: task.draftMessage
+			task_id: $scope.currentTaskId,
+			msg: $scope.draftMessage
 		}
 		$http.post('/api/messages/send/', message).success(function(data) {
 	    // $scope.$apply(function () {
@@ -46,20 +49,19 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 	  }).error(function(data) {
   		$scope.error = 'Failed to send message :-(';
   	});
-  	task.draftMessage = '';
+  	$scope.draftMessage = '';
 	}
 
 	function appendMessage(messageObj) {
-		var targetTask = _.findWhere($scope.tasks, {id: messageObj.task_id});
-		if (targetTask) {
-			if (typeof targetTask.messages === 'undefined') {
-				targetTask.messages = [];
-			}
-			targetTask.messages.push(messageObj);
+		if (messageObj.task.priority >= $scope.currentTaskPriority) {
+			$scope.messages.push(messageObj);
 			// Let angular know that data has changed
 			$scope.$apply(function () {
-				$scope.tasks = $scope.tasks;
+				$scope.messages = $scope.messages;
 			});
+			scrollToLastMessage();
+		} else {
+			debug("Message priority too low");
 		}
 	}
 
@@ -72,8 +74,11 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
   	if ((isNaN(taskIdInt)) || (taskIdInt <= 0)) {
 	  	$scope.error = 'Task id is not valid: ' + taskId;
 	  } else {
-	  	$http.post('task/start/' + taskIdInt).success(function(data) {
+	  	$http.post('api/tasks/start/' + taskIdInt).success(function(data) {
 		    $scope.currentTaskId = taskIdInt;
+		    $scope.currentTaskPriority = data.current_task.priority;
+		    //$scope.tasks = data.tasks;
+		    loadTasks();
 		  }).error(function(data) {
 	  		$scope.error = 'Failed to set current task :-(';
 	  	});
@@ -90,10 +95,31 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
   }
 
   function loadTasks() {
-  	$http.get('user/tasks').success(function(data) {
+  	$http.get('api/user/tasks').success(function(data) {
 	    $scope.tasks = data.tasks;
-	  });
-	  // TODO: .error
+	  }).error(function(data) {
+  		$scope.error = 'Failed to get tasks :-(';
+  	});
+
+	  var taskIdStr = $scope.currentTaskId ? $scope.currentTaskId : '';
+  	$http.get('api/messages/?current-task-id=' + taskIdStr).success(function(data) {
+	    $scope.messages = data.messages;
+	    scrollToLastMessage();
+	  }).error(function(data) {
+  		$scope.error = 'Failed to get messages :-(';
+  	});
+  }
+
+  // XXX: Pass this function to $scope.init as callback!
+  $scope.scrollToLastMessage = function() {
+  	if (jQuery) {
+  		var ARBITRARY_BIG_NUMBER = 10000;
+  		jQuery(".msg-list").scrollTop(ARBITRARY_BIG_NUMBER);
+  	}
+  }
+
+  function debug(str) {
+  	console.log(str);
   }
 
 });

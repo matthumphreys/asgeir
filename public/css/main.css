@@ -1,4 +1,4 @@
-/* TASK LIST: HEADER */
+/* TASKS: HEADER */
 .task-header {
 	font-weight: lighter;
 	background-color: #222;
@@ -21,7 +21,7 @@
 	padding-right: 3px;
 }
 
-/* TASK LIST: BODY */
+/* TASKS: BODY */
 .task {
 	padding-top: 3px;
 	border-bottom: 1px solid #ddd;
@@ -41,27 +41,43 @@
 .task-main {
 	margin-left: 30px;
 }
+.xxxxxtask-clear {
+	margin-left: 30px;
+}
 .msg-handle {
 	font-weight: bold;
 }
-.task-msg-box input {
+
+/* MESSAGES */
+
+.msg-box input {
 	margin-bottom: 7px;
 	width: 305px;
 	font-family: monospace;
 }
-.task-msg-list {
-	max-height: 60px;
+.msg-list {
+	max-height: 250px;
 	overflow: auto;
 }
-.task-msg-odd {
+.msg-odd {
 	background-color: #f9f9f9;
 }
-.task-msg-li {
+.msg-li {
 	padding-left: 3px;
 	padding-right: 3px;
 }
 .btn {
 	font-size: 11px;
+}
+
+/* MSG LIST: HEADER */
+
+.msg-header {
+	margin-top: 5px;
+	font-weight: lighter;
+	background-color: #222;
+	color: white;
+	font-size: small;
 }
 
 /* MISC */

@@ -4,35 +4,29 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tasks</title>
-  <style>
-  	/* 
-  	Striping looks confusing when there's also a "current task". 
-  	NOTE: The style needs to be defined before Boostrap.
-  	.task-even {
-			background-color: #f9f9f9;
-		}
-		*/
-  </style>
+  <title>Messages</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/main.css" rel="stylesheet">
+  <script src="/js/jquery-2.1.1.min.js"></script>
   <script src="/js/angular.min.js"></script>
   <script src="/js/underscore.min.js"></script>
   <script src="/js/controllers.js"></script>
 </head>
 <%# current_task_id can be nil %>
-<body ng-controller="TaskListCtrl" ng-init="init(<%= @user.id %>, '<%= @user.handle %>', '<%= current_task_id %>')">
+<body id="my-body" ng-controller="TaskListCtrl" 
+		ng-init="init(<%= @user.id %>, '<%= @user.handle %>', '<%= current_task_id %>', '<%= current_task_priority %>')">
 
 	<div class="task-header">
 		<div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div>
 		<div class="th-main">
-			Tasks
+			Tasks:
+			<span ng-show="!currentTaskId">What are you currently working on?</span>
 			<span class="th-actions" onclick="window.open('/tasks/', 'winAdmin')">
 				[ Admin ]
 			</span>
-			<span class="th-actions" ng-click="resetInProgress()">
+			<!--<span class="th-actions" ng-click="resetInProgress()" ng-show="currentTaskId">
 				[ Clear "in progress" status ]
-			</span>
+			</span>-->
 		</div>
 	</div>
 
@@ -52,19 +46,48 @@
 			</div>
 			<div class="task-main">
 				<div class="task-title"><span>{{task.title}}</span></div>
-				<div class="task-msg-box">
-					<div class="task-msg-list">
-						<div class="task-msg-li" ng-repeat="message in task.messages" ng-class-odd="'task-msg-odd'">
-							<div><span class="msg-handle">{{message.user.handle}}:</span> {{message.msg}}</div>
-						</div>
-					</div>
-					<!-- XXX: Rename sg to draft -->
-					<input type="text" name="msg" ng-model="task.draftMessage" placeholder="Send a message" ng-keypress="submitOnEnter($event, task)" />
-					<button type="button" class="btn btn-default" ng-click="sendMessage(task)">Send</button>
-				</div>
 			</div>
+		</div>
+		<div ng-click="resetInProgress()" ng-show="currentTaskId">
+			<div class="task-main">[ Clear "in progress" status ]</div>
 		</div>
 	</form>
 
+	<div ng-model-"tasks" ng-hide="tasks">
+		No tasks
+	</div>
+
+	<div class="task-header">
+		<div class="th-status"></div>
+		<div class="th-main">
+			Messages
+		</div>
+	</div>
+
+	<div class="msg-box">
+		<div class="msg-list">
+			<div id="msg-{{message.id}}" class="msg-li" ng-repeat="message in messages" ng-class-odd="'msg-odd'">
+				<div><span class="msg-handle">{{message.user.handle}}:</span> {{message.msg}}</div>
+			</div>
+		</div>
+		<!-- XXX: Rename msg to draft -->
+		<input type="text" name="msg" ng-model="draftMessage" placeholder="Send a message" ng-keypress="submitOnEnter($event)" />
+		<button type="button" class="btn btn-default" ng-click="sendMessage()">Send</button>
+	</div>
+
+	<script>
+		// XXX: Scroll to last message after messages have loaded and DOM has updated
+
+		function initScroll() {
+			console.log("Scrolling to last message...");
+			var ARBITRARY_BIG_NUMBER = 10000;
+			jQuery(".msg-list").scrollTop(ARBITRARY_BIG_NUMBER);
+		}
+
+		$(document).ready(function() {
+			//setTimeout(function(){initScroll();}, 200);
+			//initScroll();
+	  });
+	</script>
 </body>
 </html>

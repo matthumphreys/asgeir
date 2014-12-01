@@ -17,7 +17,14 @@ get '/' do
     @user = User.find_by handle: user_handle # Will raise an exception if there's no matching record
     # TODO: Get tasks
     @tasks = Task.all()
-    erb :chat_ng, :locals => { :current_task_id => @user.current_task_id }, :layout => false
+    @current_task_priority = 0
+    if !@user.current_task_id.nil?
+      current_task = Task.find(@user.current_task_id)
+      @current_task_priority = current_task.priority
+    end
+
+    erb :chat_ng, :locals => { :current_task_id => @user.current_task_id, 
+        :current_task_priority => @current_task_priority }, :layout => false
   else
     @users = User.all().order(:handle)
     erb :login, :layout => false
@@ -46,14 +53,19 @@ end
 
 # TASKS API ###################################################################
 
-post '/task/start/:task_id' do
+post '/api/tasks/start/:task_id' do
   content_type :json
   task_id = params[:task_id].to_i
   if task_id > 0
     user = get_current_user()
     user.current_task_id = task_id
     success = user.save()
-    {:success => success, 'task_id' => task_id}.to_json
+
+    # Need to return task priority
+    current_task = Task.find(user.current_task_id)
+    # Also need to update task list
+    important_tasks = Task.find_important(current_task)
+    {:success => success, 'current_task' => current_task, :tasks => important_tasks}.to_json
   else
     [500, {:error => 'id must be greater than 0'}.to_json]
   end
@@ -73,15 +85,17 @@ get '/tasks/' do
   erb :task_admin_ng, :layout => false
 end
 
-get '/user/tasks' do
+get '/api/user/tasks' do
   content_type :json
   user = get_current_user()
   if user.current_task_id.nil?
-    tasks = Task.all()
+    tasks = Task.order(priority: :desc)
   else
     current_task = Task.find(user.current_task_id)
     #tasks = Task.includes({messages: {user: :handle}}).where("priority <= ?", current_task.priority)
-    tasks = Task.includes({:messages => [:user]}).where("priority <= ?", current_task.priority)
+    tasks = Task.includes({:messages => [:user]})
+      .where("priority >= ?", current_task.priority)
+      .order(priority: :desc)
     
   end
   {:tasks => tasks}.to_json(:include => {:messages => {:include => {:user => {:only => :handle }}}})
@@ -117,6 +131,21 @@ delete '/api/tasks/:task_id' do
 end
 
 # MESSAGE API #################################################################
+
+# @param current-task-id optional
+get '/api/messages/' do
+  content_type :json
+  task_id = params['current-task-id']
+  min_priority = 0
+  if !task_id.empty?
+    task = Task.find(task_id)
+    min_priority = task.priority unless task.nil?
+  end
+  #messages = Message.includes(:user).joins(:task).where('tasks.priority >= ?', min_priority)
+  messages = Message.includes(:user).joins("LEFT OUTER JOIN tasks ON messages.task_id = tasks.id").where('(tasks.priority >= ?) or (task_id = 0)', min_priority)
+  # TODO: Handle limit
+  {:messages => messages}.to_json(:include => {:user => {:only => :handle }})
+end
 
 post '/api/messages/send/' do
   content_type :json
