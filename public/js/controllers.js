@@ -59,7 +59,7 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 			$scope.$apply(function () {
 				$scope.messages = $scope.messages;
 			});
-			scrollToLastMessage();
+			$scope.scrollToLastMessage();
 		} else {
 			debug("Message priority too low");
 		}
@@ -104,7 +104,7 @@ asgeirApp.controller('TaskListCtrl', function ($scope, $http) {
 	  var taskIdStr = $scope.currentTaskId ? $scope.currentTaskId : '';
   	$http.get('api/messages/?current-task-id=' + taskIdStr).success(function(data) {
 	    $scope.messages = data.messages;
-	    scrollToLastMessage();
+	    $scope.scrollToLastMessage();
 	  }).error(function(data) {
   		$scope.error = 'Failed to get messages :-(';
   	});

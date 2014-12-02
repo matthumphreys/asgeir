@@ -17,11 +17,10 @@
 		ng-init="init(<%= @user.id %>, '<%= @user.handle %>', '<%= current_task_id %>', '<%= current_task_priority %>')">
 
 	<div class="task-header">
-		<div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div>
+		<!-- <div class="th-status"><span class="glyphicon glyphicon-play-circle" /></div> -->
 		<div class="th-main">
-			Tasks:
-			<span ng-show="!currentTaskId">What are you currently working on?</span>
-			<span class="th-actions" onclick="window.open('/tasks/', 'winAdmin')">
+			Tasks
+			<span class="th-actions th-lite" onclick="window.open('/tasks/', 'winAdmin')">
 				[ Admin ]
 			</span>
 			<!--<span class="th-actions" ng-click="resetInProgress()" ng-show="currentTaskId">
@@ -39,6 +38,7 @@
 	</div>
 
 	<form id="task-form">
+		<!-- <div ng-show="!currentTaskId" class="task-main task-info">What are you currently working on?</div> -->
 		<div class="task" ng-class-even="'task-even'" ng-repeat="task in tasks" ng-class="{'bg-success': (task.id == currentTaskId)}">
 			<%# XXX: Use ng-change instead of ng-click? %>
 			<div class="task-status" ng-click="setCurrentTask(task.id)">
@@ -49,7 +49,8 @@
 			</div>
 		</div>
 		<div ng-click="resetInProgress()" ng-show="currentTaskId">
-			<div class="task-main">[ Clear "in progress" status ]</div>
+			<!-- <div class="task-main task-clear">[ Clear "in progress" status ]</div> -->
+			<div class="task-main"><button type="button" class="btn btn-default btn-clear">Clear</button></div>
 		</div>
 	</form>
 
@@ -57,11 +58,15 @@
 		No tasks
 	</div>
 
-	<div class="task-header">
+	<!-- <div class="task-header">
 		<div class="th-status"></div>
 		<div class="th-main">
 			Messages
 		</div>
+	</div> -->
+
+	<div class="msg-header">
+		Messages
 	</div>
 
 	<div class="msg-box">
@@ -71,7 +76,7 @@
 			</div>
 		</div>
 		<!-- XXX: Rename msg to draft -->
-		<input type="text" name="msg" ng-model="draftMessage" placeholder="Send a message" ng-keypress="submitOnEnter($event)" />
+		<input type="text" name="msg" class="msg-draft" ng-model="draftMessage" placeholder="Send a message" ng-keypress="submitOnEnter($event)" />
 		<button type="button" class="btn btn-default" ng-click="sendMessage()">Send</button>
 	</div>
 
@@ -85,7 +90,7 @@
 		}
 
 		$(document).ready(function() {
-			//setTimeout(function(){initScroll();}, 200);
+			setTimeout(function(){initScroll();}, 200);
 			//initScroll();
 	  });
 	</script>

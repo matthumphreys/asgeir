@@ -1,9 +1,10 @@
 /* TASKS: HEADER */
 .task-header {
-	font-weight: lighter;
+	/*font-weight: lighter;*/
 	background-color: #222;
 	color: white;
-	font-size: small;
+	/*font-size: small;*/
+	padding: 1px 0;
 }
 .th-status {
 	/*font-size: medium;*/
@@ -13,12 +14,17 @@
 	padding-top: 1px;
 }
 .th-main {
-	position: relative;
-	left: -13px;
+	margin-left: 3px;
 }
 .th-actions {
 	float: right;
 	padding-right: 3px;
+}
+.th-actions:hover {
+	cursor: pointer;
+}
+.th-lite {
+	font-weight: lighter;
 }
 
 /* TASKS: BODY */
@@ -34,29 +40,34 @@
 	margin-left: 8px;
 }
 .task-title {
-	font-weight: bold;
-	font-size: 15px;
+	/*font-weight: bold;*/
+	/*font-size: 15px;*/
 	margin-bottom: 4px;
 }
 .task-main {
 	margin-left: 30px;
 }
-.xxxxxtask-clear {
-	margin-left: 30px;
-}
 .msg-handle {
 	font-weight: bold;
+}
+.task-info {
+	padding-top: 15px;
+	padding-bottom: 10px;
+	font-style: italic;
+}
+.task-clear:hover {
+	cursor: pointer;
 }
 
 /* MESSAGES */
 
 .msg-box input {
-	margin-bottom: 7px;
-	width: 305px;
+	margin: 5px 0 7px 3px;
+	width: 335px;
 	font-family: monospace;
 }
 .msg-list {
-	max-height: 250px;
+	max-height: 300px;
 	overflow: auto;
 }
 .msg-odd {
@@ -73,11 +84,9 @@
 /* MSG LIST: HEADER */
 
 .msg-header {
-	margin-top: 5px;
-	font-weight: lighter;
 	background-color: #222;
 	color: white;
-	font-size: small;
+	padding: 1px 0 0 3px;
 }
 
 /* MISC */
